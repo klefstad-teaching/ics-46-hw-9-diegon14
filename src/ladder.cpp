@@ -5,34 +5,27 @@ void error(string word1, string word2, string msg) {
 }
 
 bool edit_distance_within(const std::string& str1, const std::string& str2, int d) {
-    int len1 = str1.size(); 
-    int len2 = str2.size();
-    
+    int len1 = str1.length();
+    int len2 = str2.length();
     if (abs(len1 - len2) > d) 
         return false;
 
-    int dist = 0;
-    int i = 0, j = 0;
-    while (i < len1 && j < len2) {
-        if (str1[i] != str2[j]) {
-            dist++;
-            if (dist > d) 
-                return false;
-            if (len1 > len2) {
-                i++;
-            } else if (len1 < len2) {
-                j++;
+    vector<vector<int>> distance(len1 + 1, vector<int>(len2 + 1));
+
+    for (int i = 0; i <= len1; ++i) {
+        for (int j = 0; j <= len2; ++j) {
+            if (i == 0) {
+                distance[i][j] = j;
+            } else if (j == 0) {
+                distance[i][j] = i;
+            } else if (str1[i - 1] == str2[j - 1]) {
+                distance[i][j] = distance[i - 1][j - 1];
             } else {
-                i++;
-                j++;
+                distance[i][j] = 1 + min({distance[i - 1][j], distance[i][j - 1], distance[i - 1][j - 1]});
             }
-        } else {
-            i++;
-            j++;
         }
     }
-    dist += abs(len1 - len2);
-    return dist <= d;
+    return distance[len1][len2] <= d;
 }
 
 bool is_adjacent(const string& word1, const string& word2) {
@@ -95,14 +88,12 @@ void print_word_ladder(const vector<string>& ladder) {
 void verify_word_ladder() {
     set<string> word_list;
     load_words(word_list, "words.txt");
-    //my_assert(generate_word_ladder("cat", "dog", word_list).size() == 4);
-    //my_assert(generate_word_ladder("marty", "curls", word_list).size() == 6);
-    //my_assert(generate_word_ladder("code", "data", word_list).size() == 6);
+    my_assert(generate_word_ladder("cat", "dog", word_list).size() == 4);
+    my_assert(generate_word_ladder("marty", "curls", word_list).size() == 6);
+    my_assert(generate_word_ladder("code", "data", word_list).size() == 6);
     vector<string> test = generate_word_ladder("work", "play", word_list);
-    my_assert(test.size() == 6);
-    print_word_ladder(test);
-
-    //my_assert(generate_word_ladder("sleep", "awake", word_list).size() == 8);
-    //my_assert(generate_word_ladder("car", "cheat", word_list).size() == 4);
+    my_assert(test.size() == 6)
+    my_assert(generate_word_ladder("sleep", "awake", word_list).size() == 8);
+    my_assert(generate_word_ladder("car", "cheat", word_list).size() == 4);
 
 }
