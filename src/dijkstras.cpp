@@ -9,22 +9,21 @@ vector<int> dijkstra_shortest_path(const Graph& G, int source, vector<int>& prev
     pq.emplace(0, source);
     distances[source] = 0;
 
-    while (!pq.empty()) {
-        auto [dist, u] = pq.top();
-        pq.pop();
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> minHeap;
+    minHeap.push({0, source});
 
-        if (visited[u]) 
-            continue;
-
+    while (!minHeap.empty()) {
+        int u = minHeap.top().second;
+        minHeap.pop();
+        if (visited[u]) continue;
         visited[u] = true;
-        for (const Edge& neighbor : G[u]) {
-            int v = neighbor.dst;
-            int weight = neighbor.weight;
-
+        for (const Edge& edge : G[u]) {
+            int v = edge.dst;
+            int weight = edge.weight;
             if (!visited[v] && distances[u] + weight < distances[v]) {
                 distances[v] = distances[u] + weight;
                 previous[v] = u;
-                pq.emplace(distances[v], v);
+                minHeap.push({distances[v], v});
             }
         }
     }
