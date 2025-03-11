@@ -11,33 +11,23 @@ bool edit_distance_within(const std::string& str1, const std::string& str2, int 
     if (len1 > len2) {
         return edit_distance_within(str2, str1, d);
     }
-    
+
     if (abs(len1 - len2) > d) {
         return false;
     }
 
-    vector<int> prev(len2 + 1);
-    vector<int> curr(len2 + 1);
+    if (len1 == 0) return len2 <= d;
+    if (len2 == 0) return len1 <= d;
 
-    for (int j = 0; j <= len2; ++j) {
-        prev[j] = j;
-    }
+    if (d < 0) return false;
 
-    for (int i = 1; i <= len1; ++i) {
-        curr[0] = i;
-        for (int j = 1; j <= len2; ++j) {
-            if (str1[i - 1] == str2[j - 1]) {
-                curr[j] = prev[j - 1];
-            } else {
-                curr[j] = min({prev[j - 1], prev[j], curr[j - 1]}) + 1;
-            }
-        }
-        if (*min_element(curr.begin(), curr.end()) > d) {
-            return false;
-        }
-        swap(prev, curr);
+    if (str1[len1 - 1] == str2[len2 - 1]) {
+        return edit_distance_within(str1.substr(0, len1 - 1), str2.substr(0, len2 - 1), d);
+    } else {
+        return edit_distance_within(str1, str2.substr(0, len2 - 1), d - 1) ||
+               edit_distance_within(str1.substr(0, len1 - 1), str2, d - 1) ||
+               edit_distance_within(str1.substr(0, len1 - 1), str2.substr(0, len2 - 1), d - 1);
     }
-    return prev[len2] <= d;
 }
 
 bool is_adjacent(const string& word1, const string& word2) {
