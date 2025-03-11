@@ -73,9 +73,16 @@ void load_words(set<string> & word_list, const string& file_name) {
         error("", "", "Unable to open file");
     }
 
-    while (file >> word) {
-        transform(word.begin(), word.end(), word.begin(), ::tolower);
-        word_list.insert(word);
+    stringstream buffer;
+    buffer << file.rdbuf();
+    string data = buffer.str();
+    stringstream ss(data);
+
+    while (ss >> word) {
+        for (char& c : word) {
+            c = tolower(c);
+        }
+        word_list.emplace(move(word));
     }
 }
 
