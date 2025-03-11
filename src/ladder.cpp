@@ -19,23 +19,14 @@ bool edit_distance_within(const std::string& str1, const std::string& str2, int 
     if (len1 == 0) return len2 <= d;
     if (len2 == 0) return len1 <= d;
 
-    if (d < 0) return false;
-
-    if (str1[len1 - 1] == str2[len2 - 1]) {
-        return edit_distance_within(str1.substr(0, len1 - 1), str2.substr(0, len2 - 1), d);
+    if (str1[0] == str2[0]) {
+        return edit_distance_within(str1.substr(1), str2.substr(1), d);
     } else {
-        if (edit_distance_within(str1, str2.substr(0, len2 - 1), d - 1)) {
-            return true;
-        }
-
-        if (edit_distance_within(str1.substr(0, len1 - 1), str2, d - 1)) {
-            return true;
-        }
-        
-        if (edit_distance_within(str1.substr(0, len1 - 1), str2.substr(0, len2 - 1), d - 1)) {
-            return true;
-        }
-        return false;
+        return d > 0 && (
+            edit_distance_within(str1.substr(1), str2, d - 1) ||
+            edit_distance_within(str1, str2.substr(1), d - 1) ||
+            edit_distance_within(str1.substr(1), str2.substr(1), d - 1)
+        );
     }
 }
 
